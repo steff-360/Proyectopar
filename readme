@@ -1,0 +1,120 @@
+# 🅿️ New Parking — Sistema de Gestión Guatemala
+
+Sistema web de gestión de parqueadero adaptado para Guatemala. Funciona completamente en el navegador, sin necesidad de servidor ni base de datos externa.
+
+---
+
+##  Cómo usar
+
+1. Coloca los 3 archivos en la misma carpeta:
+   - `index.html`
+   - `app.css`
+   - `parking.js`
+2. Abre `index.html` en tu navegador.
+3. Inicia sesión con las credenciales por defecto.
+
+---
+
+##  Credenciales por defecto
+
+| Campo  | Valor                        |
+|--------|------------------------------|
+| Correo | `admin@newparking.com.gt`    |
+| Contraseña | `Admin123`              |
+
+> Puedes cambiar tu nombre, correo y contraseña desde **Mi Perfil** (clic en tu nombre en la esquina inferior del menú).
+
+---
+
+##  Secciones del sistema
+
+### Dashboard
+Vista general con:
+- Vehículos activos en este momento
+- Espacios disponibles vs. total
+- Registros históricos
+- Ingresos totales en Quetzales (Q)
+- Lista de vehículos activos y últimas entradas
+- Galería del parqueadero
+
+###  Espacios
+Vista en tiempo real de todos los espacios del parqueo:
+- Tarjetas **verdes** = disponibles
+- Tarjetas **rojas** = ocupados (muestran placa, tipo y hora de entrada)
+- Filtros: Todos / Disponibles / Ocupados
+- Clic en espacio libre → registra entrada directamente en ese slot
+- Clic en espacio ocupado → muestra detalles y costo estimado, con opción de registrar salida
+- Botón **Configurar** para definir secciones (A, B, C…) y cantidad de espacios por sección
+
+### 🚗 Tipos de Vehículos
+Gestión de categorías con tarifas en Quetzales por hora:
+
+| Código | Nombre      | Tarifa sugerida |
+|--------|-------------|-----------------|
+| MOT    | Motocicleta | Q 5.00/hr       |
+| AUTO   | Automóvil   | Q 8.00/hr       |
+| CAM    | Camioneta   | Q 10.00/hr      |
+| BUS    | Bus/Minibus | Q 15.00/hr      |
+
+Puedes crear, editar y eliminar tipos. No se puede eliminar un tipo que tenga vehículos activos.
+
+### 🅿Servicio de Parqueo
+Registro completo de entradas y salidas:
+- Registro de entrada con placa, slot, tipo, fecha y hora
+- Registro de salida con cálculo automático del costo
+- Filtro por estado (activos / finalizados) y búsqueda por placa o slot
+- Edición y eliminación de registros
+
+---
+
+## Moneda
+
+Todos los precios se muestran en **Quetzales guatemaltecos (Q)** con formato local `es-GT`.
+
+---
+
+##  Formato de placas
+
+Se aceptan placas guatemaltecas en formato alfanumérico de 3 a 8 caracteres, por ejemplo:
+- `P123ABC` (motocicleta)
+- `ABC1234` (automóvil)
+- `C12345` (camión)
+
+---
+
+##  Almacenamiento
+
+Todos los datos se guardan en el **localStorage** del navegador. No requiere internet ni base de datos. Los datos persisten entre sesiones en el mismo navegador y dispositivo.
+
+> ⚠️ Si limpias el caché o los datos del navegador, se perderá la información guardada. Se recomienda hacer respaldo periódico si el sistema se usa en producción.
+
+---
+
+##  Responsive
+
+El sistema es compatible con dispositivos móviles y tablets. En pantallas pequeñas el menú lateral se convierte en un menú hamburguesa.
+
+---
+
+## 🛠️ Tecnologías
+
+- HTML5 / CSS3 / JavaScript — sin frameworks
+- Google Fonts: Syne, DM Sans, JetBrains Mono
+- localStorage para persistencia de datos
+
+---
+
+## 📁 Estructura de archivos
+
+```
+new-parking/
+├── index.html   # Estructura HTML y vistas
+├── app.css    # Estilos y diseño
+└── parking.js       # Lógica del sistema
+```
+
+---
+
+##  Autor
+Stefani
+Sistema desarrollado para gestión de parqueaderos en Guatemala.  
