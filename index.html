@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Parking — Sistema de Gestión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+
+  <!-- LOGIN VIEW -->
+  <div id="view-login" class="view active">
+    <div class="login-bg">
+      <div class="login-bg__gradient"></div>
+      <div class="login-bg__grid"></div>
+    </div>
+    <div class="login-hero">
+      <img id="login-hero-img" src="" alt="Parking" class="login-hero__img" />
+      <div class="login-hero__overlay"></div>
+      <div class="login-hero__content">
+        <div class="login-hero__badge">Gestión Inteligente · Guatemala</div>
+        <h1 class="login-hero__title">New<br/><span>Parking</span></h1>
+        <p class="login-hero__sub">Controla, registra y optimiza<br/>cada espacio de tu parqueadero.</p>
+        <div class="login-hero__stats">
+          <div class="stat"><span class="stat__n">99%</span><span class="stat__l">Uptime</span></div>
+          <div class="stat"><span class="stat__n">+500</span><span class="stat__l">Vehículos</span></div>
+          <div class="stat"><span class="stat__n">24/7</span><span class="stat__l">Control</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="login-form-panel">
+      <div class="login-form-wrap">
+        <div class="login-logo">
+          <div class="login-logo__icon">
+            <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="var(--accent)"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="20" font-family="Syne" fill="#0a0a0a" font-weight="800">P</text></svg>
+          </div>
+          <span>New Parking</span>
+        </div>
+        <h2 class="login-form-panel__title">Bienvenido</h2>
+        <p class="login-form-panel__sub">Ingresa tus credenciales para continuar</p>
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="l-email">Correo electrónico</label>
+            <div class="field__input-wrap">
+              <span class="field__icon">✉</span>
+              <input type="email" id="l-email" placeholder="admin@newparking.com.gt" autocomplete="email"/>
+            </div>
+            <span class="field__error" id="l-email-err"></span>
+          </div>
+          <div class="field">
+            <label for="l-pass">Contraseña</label>
+            <div class="field__input-wrap">
+              <span class="field__icon">🔒</span>
+              <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"/>
+              <button type="button" class="field__toggle" onclick="togglePassword('l-pass', this)">👁</button>
+            </div>
+            <span class="field__error" id="l-pass-err"></span>
+          </div>
+          <div id="login-global-err" class="alert alert--error hidden"></div>
+          <button type="submit" class="btn btn--primary btn--full">
+            <span>Ingresar al sistema</span>
+            <svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+        <p class="login-form-panel__hint">Sistema reservado para personal autorizado.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP VIEW -->
+  <div id="view-app" class="view">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar__brand">
+        <div class="sidebar__brand-icon">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="var(--accent)"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="20" font-family="Syne" fill="#0a0a0a" font-weight="800">P</text></svg>
+        </div>
+        <span>New<br/><strong>Parking</strong></span>
+      </div>
+      <nav class="sidebar__nav">
+        <button class="sidebar__nav-item active" data-section="dashboard">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="sidebar__nav-item" data-section="spaces">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span>Espacios</span>
+        </button>
+        <button class="sidebar__nav-item" data-section="vehicle-types">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M5 17H3V11L6 6h11l3 5v6h-2M9 17h6M6 11h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Tipos de Vehículos</span>
+        </button>
+        <button class="sidebar__nav-item" data-section="parking">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Servicio de Parqueo</span>
+        </button>
+      </nav>
+      <div class="sidebar__footer">
+        <button class="sidebar__user" id="open-profile">
+          <div class="sidebar__avatar" id="sidebar-avatar">A</div>
+          <div class="sidebar__user-info">
+            <span id="sidebar-name">admin</span>
+            <span id="sidebar-email">admin@newparking.com.gt</span>
+          </div>
+        </button>
+        <button class="sidebar__logout" onclick="logout()" title="Cerrar sesión">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- DASHBOARD -->
+      <section id="section-dashboard" class="section active">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Dashboard</h2>
+            <p class="section-header__sub">Resumen general del sistema</p>
+          </div>
+          <div class="section-header__date" id="dash-date"></div>
+        </div>
+        <div class="dashboard-hero-img">
+          <img id="dash-hero-img" src="" alt="Parking overview" />
+          <div class="dashboard-hero-img__overlay">
+            <span>Gestión en tiempo real · Guatemala</span>
+          </div>
+        </div>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card__header">
+              <h3>Vehículos activos</h3>
+              <span class="badge badge--green">En parqueo</span>
+            </div>
+            <div id="active-vehicles-list" class="vehicle-list"></div>
+          </div>
+          <div class="card">
+            <div class="card__header">
+              <h3>Últimas entradas</h3>
+              <span class="badge badge--blue">Recientes</span>
+            </div>
+            <div id="recent-entries-list" class="vehicle-list"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:1.5rem">
+          <div class="card__header"><h3>Galería del Parqueadero</h3></div>
+          <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+      </section>
+
+      <!-- SPACES -->
+      <section id="section-spaces" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Espacios del Parqueo</h2>
+            <p class="section-header__sub">Vista en tiempo real de disponibilidad</p>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+            <button class="btn btn--ghost" onclick="openSpaceConfigModal()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+              Configurar
+            </button>
+            <button class="btn btn--primary" onclick="openParkingModal()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Registrar entrada
+            </button>
+          </div>
+        </div>
+
+        <!-- Legend + summary -->
+        <div class="spaces-summary" id="spaces-summary"></div>
+
+        <!-- Filter -->
+        <div class="spaces-filter-bar">
+          <button class="spaces-filter-btn active" data-filter="all" onclick="filterSpaces('all', this)">Todos</button>
+          <button class="spaces-filter-btn" data-filter="available" onclick="filterSpaces('available', this)">Disponibles</button>
+          <button class="spaces-filter-btn" data-filter="occupied" onclick="filterSpaces('occupied', this)">Ocupados</button>
+          <div class="spaces-legend">
+            <span class="legend-dot legend-dot--available"></span><span>Disponible</span>
+            <span class="legend-dot legend-dot--occupied"></span><span>Ocupado</span>
+          </div>
+        </div>
+
+        <!-- Grid of spaces -->
+        <div class="spaces-grid-wrap card">
+          <div id="spaces-grid" class="spaces-grid"></div>
+        </div>
+      </section>
+
+      <!-- VEHICLE TYPES -->
+      <section id="section-vehicle-types" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Tipos de Vehículos</h2>
+            <p class="section-header__sub">Gestiona las categorías y tarifas</p>
+          </div>
+          <button class="btn btn--primary" onclick="openVehicleTypeModal()">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Nuevo tipo
+          </button>
+        </div>
+        <div class="table-wrap card">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M13 13l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input type="text" id="vt-search" placeholder="Buscar tipo de vehículo…" oninput="renderVehicleTypes()" />
+            </div>
+            <span id="vt-count" class="table-count"></span>
+          </div>
+          <table class="data-table" id="vt-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Tarifa / hora</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="vt-tbody"></tbody>
+          </table>
+          <div id="vt-empty" class="empty-state hidden">
+            <div class="empty-state__icon">🚗</div>
+            <p>No hay tipos de vehículos registrados.</p>
+            <button class="btn btn--primary" onclick="openVehicleTypeModal()">Crear primero</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PARKING SERVICE -->
+      <section id="section-parking" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Servicio de Parqueo</h2>
+            <p class="section-header__sub">Registro de entrada y salida de vehículos</p>
+          </div>
+          <button class="btn btn--primary" onclick="openParkingModal()">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Registrar entrada
+          </button>
+        </div>
+        <div class="filter-bar">
+          <div class="search-box">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M13 13l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input type="text" id="pk-search" placeholder="Placa o slot…" oninput="renderParking()" />
+          </div>
+          <select id="pk-status" onchange="renderParking()" class="filter-select">
+            <option value="">Todos</option>
+            <option value="active">Activos</option>
+            <option value="closed">Finalizados</option>
+          </select>
+          <span id="pk-count" class="table-count"></span>
+        </div>
+        <div class="table-wrap card">
+          <table class="data-table" id="pk-table">
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Slot</th>
+                <th>Fecha</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Costo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="pk-tbody"></tbody>
+          </table>
+          <div id="pk-empty" class="empty-state hidden">
+            <div class="empty-state__icon">🅿️</div>
+            <p>No hay registros de parqueo.</p>
+            <button class="btn btn--primary" onclick="openParkingModal()">Registrar vehículo</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Vehicle Type -->
+  <div id="modal-vt" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 id="modal-vt-title">Nuevo tipo de vehículo</h3>
+        <button class="modal__close" onclick="closeModal('modal-vt')">✕</button>
+      </div>
+      <div class="modal__body">
+        <form id="form-vt" novalidate>
+          <input type="hidden" id="vt-id" />
+          <div class="field">
+            <label for="vt-code">Código *</label>
+            <div class="field__input-wrap">
+              <input type="text" id="vt-code" placeholder="Ej: MOT" maxlength="10"/>
+            </div>
+            <span class="field__error" id="vt-code-err"></span>
+          </div>
+          <div class="field">
+            <label for="vt-name">Nombre *</label>
+            <div class="field__input-wrap">
+              <input type="text" id="vt-name" placeholder="Ej: Motocicleta"/>
+            </div>
+            <span class="field__error" id="vt-name-err"></span>
+          </div>
+          <div class="field">
+            <label for="vt-rate">Tarifa por hora (Q) *</label>
+            <div class="field__input-wrap">
+              <span class="field__icon">Q</span>
+              <input type="number" id="vt-rate" placeholder="5.00" min="0" step="0.50"/>
+            </div>
+            <span class="field__error" id="vt-rate-err"></span>
+          </div>
+        </form>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('modal-vt')">Cancelar</button>
+        <button class="btn btn--primary" onclick="saveVehicleType()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Parking -->
+  <div id="modal-pk" class="modal-backdrop hidden">
+    <div class="modal modal--wide">
+      <div class="modal__header">
+        <h3 id="modal-pk-title">Registrar entrada</h3>
+        <button class="modal__close" onclick="closeModal('modal-pk')">✕</button>
+      </div>
+      <div class="modal__body">
+        <form id="form-pk" novalidate>
+          <input type="hidden" id="pk-id" />
+          <div class="form-row">
+            <div class="field">
+              <label for="pk-plate">Placa *</label>
+              <div class="field__input-wrap">
+                <input type="text" id="pk-plate" placeholder="P123ABC" maxlength="8" style="text-transform:uppercase"/>
+              </div>
+              <span class="field__error" id="pk-plate-err"></span>
+            </div>
+            <div class="field">
+              <label for="pk-slot">Ranura (Slot) *</label>
+              <div class="field__input-wrap">
+                <input type="text" id="pk-slot" placeholder="A-01"/>
+              </div>
+              <span class="field__error" id="pk-slot-err"></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="pk-type">Tipo de vehículo *</label>
+              <select id="pk-type">
+                <option value="">Seleccionar…</option>
+              </select>
+              <span class="field__error" id="pk-type-err"></span>
+            </div>
+            <div class="field">
+              <label for="pk-date">Fecha *</label>
+              <div class="field__input-wrap">
+                <input type="date" id="pk-date"/>
+              </div>
+              <span class="field__error" id="pk-date-err"></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="pk-entry">Hora de entrada *</label>
+              <div class="field__input-wrap">
+                <input type="time" id="pk-entry"/>
+              </div>
+              <span class="field__error" id="pk-entry-err"></span>
+            </div>
+            <div class="field">
+              <label for="pk-exit">Hora de salida</label>
+              <div class="field__input-wrap">
+                <input type="time" id="pk-exit"/>
+              </div>
+              <span class="field__error" id="pk-exit-err"></span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('modal-pk')">Cancelar</button>
+        <button class="btn btn--primary" onclick="saveParking()">Guardar registro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Cost -->
+  <div id="modal-cost" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal__header">
+        <h3>Resumen de servicio</h3>
+        <button class="modal__close" onclick="closeModal('modal-cost')">✕</button>
+      </div>
+      <div class="modal__body" id="cost-body"></div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('modal-cost')">Cerrar</button>
+        <button class="btn btn--primary" id="cost-confirm-btn">Confirmar salida</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Profile -->
+  <div id="modal-profile" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal__header">
+        <h3>Mi perfil</h3>
+        <button class="modal__close" onclick="closeModal('modal-profile')">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar-big">A</div>
+        </div>
+        <form id="form-profile" novalidate>
+          <div class="field">
+            <label for="pr-name">Nombre *</label>
+            <div class="field__input-wrap">
+              <input type="text" id="pr-name" />
+            </div>
+            <span class="field__error" id="pr-name-err"></span>
+          </div>
+          <div class="field">
+            <label for="pr-email">Correo electrónico *</label>
+            <div class="field__input-wrap">
+              <input type="email" id="pr-email" />
+            </div>
+            <span class="field__error" id="pr-email-err"></span>
+          </div>
+          <div class="field">
+            <label for="pr-pass">Nueva contraseña <span class="optional">(dejar vacío para no cambiar)</span></label>
+            <div class="field__input-wrap">
+              <input type="password" id="pr-pass" placeholder="Nueva contraseña"/>
+              <button type="button" class="field__toggle" onclick="togglePassword('pr-pass', this)">👁</button>
+            </div>
+            <span class="field__error" id="pr-pass-err"></span>
+          </div>
+        </form>
+        <div id="profile-alert" class="alert hidden"></div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('modal-profile')">Cancelar</button>
+        <button class="btn btn--primary" onclick="saveProfile()">Actualizar perfil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Confirm -->
+  <div id="modal-confirm" class="modal-backdrop hidden">
+    <div class="modal modal--sm">
+      <div class="modal__header">
+        <h3>Confirmar eliminación</h3>
+        <button class="modal__close" onclick="closeModal('modal-confirm')">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="confirm-icon">⚠️</div>
+        <p id="confirm-message" class="confirm-text"></p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('modal-confirm')">Cancelar</button>
+        <button class="btn btn--danger" id="confirm-ok-btn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Space Config -->
+  <div id="modal-space-config" class="modal-backdrop hidden">
+    <div class="modal modal--sm">
+      <div class="modal__header">
+        <h3>Configurar espacios</h3>
+        <button class="modal__close" onclick="closeModal('modal-space-config')">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="color:var(--text2);font-size:.9rem;margin-bottom:1.5rem">Define cuántos espacios tiene tu parqueo por sección.</p>
+        <div id="space-config-rows"></div>
+        <button class="btn btn--ghost" style="width:100%;margin-top:.75rem" onclick="addSpaceRow()">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Agregar sección
+        </button>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('modal-space-config')">Cancelar</button>
+        <button class="btn btn--primary" onclick="saveSpaceConfig()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Space Detail -->
+  <div id="modal-space-detail" class="modal-backdrop hidden">
+    <div class="modal modal--sm">
+      <div class="modal__header">
+        <h3 id="space-detail-title">Espacio</h3>
+        <button class="modal__close" onclick="closeModal('modal-space-detail')">✕</button>
+      </div>
+      <div class="modal__body" id="space-detail-body"></div>
+      <div class="modal__footer" id="space-detail-footer"></div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="parking.js"></script>
+</body>
+</html>
