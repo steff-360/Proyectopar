@@ -1,10 +1,9 @@
 /* ═══════════════════════════════════════════
-   NEW PARKING GUATEMALA — APP.JS
-   Adaptado para Guatemala: GTQ, placas GT
+   NEW PARKING GUATEMALA 
 ═══════════════════════════════════════════ */
 'use strict';
 
-/* ─── IMAGES ─── */
+/* ─── IMAGES No fue facil ─── */
 const IMAGES = {
   loginHero: [
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80',
