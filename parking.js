@@ -69,10 +69,11 @@ function initData() {
   }
   if (!load(K.TYPES, null)) {
     save(K.TYPES, [
-      { id: uid(), code: 'MOT',  name: 'Motocicleta', rate: 5 },
-      { id: uid(), code: 'AUTO', name: 'Automóvil',   rate: 8 },
-      { id: uid(), code: 'CAM',  name: 'Camioneta',   rate: 10 },
-      { id: uid(), code: 'BUS',  name: 'Bus/Minibus', rate: 15 },
+      { id: uid(), code: 'MOT',  name: 'Motocicleta (M)', rate: 5 },
+      { id: uid(), code: 'AUTO', name: 'Particular (P)',   rate: 8 },
+      { id: uid(), code: 'CAM',  name: 'Comercial/Carga (C)',   rate: 10 },
+      { id: uid(), code: 'BUS',  name: 'Alquiler (A)', rate: 15 },
+      { id: uid(), code: 'OFC',  name: 'Oficial (O)', rate: 12 },
     ]);
   }
   if (!load(K.PARKING, null)) {
@@ -746,36 +747,45 @@ function saveParking() {
       load(K.TYPES, []).find(t => t.id === typeId)?.code
     )
   ) {
-    setErr('pk-plate-err', 'La placa no coincide con el tipo de vehículo.');
+    setErr('pk-plate-err', 'Formato inválido (Ej: P001BBB). Use 3 dígitos (001-999) y 3 consonantes (sin vocales ni Ñ).');
     ok = false;
   }
-  if (!slot)   { setErr('pk-slot-err', 'La ranura es obligatoria.'); ok = false; }
+
+  if (!slot) {
+    setErr('pk-slot-err', 'La ranura es obligatoria.');
+    ok = false;
+  } else if (!isSlotDefined(slot)) {
+    setErr('pk-slot-err', 'La ranura no existe en la configuración.');
+    ok = false;
+  }
+
   if (!typeId) { setErr('pk-type-err', 'Selecciona el tipo de vehículo.'); ok = false; }
   if (!date)   { setErr('pk-date-err', 'La fecha es obligatoria.'); ok = false; }
   if (!entry)  { setErr('pk-entry-err', 'La hora de entrada es obligatoria.'); ok = false; }
   if (exit && entry && exit <= entry) {
     setErr('pk-exit-err', 'La salida debe ser posterior a la entrada.'); ok = false;
   }
-  if (!ok) return;
 
   const records = load(K.PARKING, []);
-  if (records.some(r =>
+  if (ok && records.some(r =>
     r.plate.toUpperCase() === plate &&
     !r.exitTime &&
     r.id !== id
   )) {
     setErr('pk-plate-err', 'Esa placa ya está activa en el parqueadero.');
-    return;
+    ok = false;
   }
   
-  if (records.some(r =>
+  if (ok && records.some(r =>
     r.slot.toUpperCase() === slot &&
     !r.exitTime &&
     r.id !== id
   )) {
     setErr('pk-slot-err', 'Esa ranura ya está ocupada.');
-    return;
+    ok = false;
   }
+
+  if (!ok) return;
 
   const t = load(K.TYPES, []).find(x => x.id === typeId);
   let cost = null;
@@ -898,30 +908,30 @@ function toast(msg, type = 'info') {
    VALIDATION
 ══════════════════════════════════════════ */
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-// Guatemala plates: P 123 ABC (motocicleta) or ABC 1234 or C 12345 etc.
-// Accept flexible alphanumeric 3-8 chars
-function isValidPlate(plate, typeCode) {
 
+function isSlotDefined(slotId) {
+  const config = load(K.SPACES, []);
+  for (const sec of config) {
+    for (let i = 1; i <= sec.count; i++) {
+      if (`${sec.section}-${String(i).padStart(2, '0')}` === slotId) return true;
+    }
+  }
+  return false;
+}
+
+function isValidPlate(plate, typeCode) {
   plate = plate.trim().toUpperCase();
+  // Consonantes permitidas: Sin vocales (A,E,I,O,U) y sin Ñ
+  const c = "BCDFGHJKLMNPQRSTVWXYZ";
+  // Formato: 3 dígitos (001-999) + 3 consonantes
+  const suffix = `(?!000)\\d{3}[${c}]{3}$`;
 
   switch(typeCode) {
-
-    // MOTOCICLETA
-    case 'MOT':
-      return /^[M]\d{3}[A-Z]{3}$/.test(plate);
-
-    // AUTOMÓVIL
-    case 'AUTO':
-      return /^[P]\d{3}[A-Z]{3}$/.test(plate);
-
-    // CAMIONETA
-    case 'CAM':
-      return /^[C]\d{3}[A-Z]{3}$/.test(plate);
-
-    // BUS
-    case 'BUS':
-      return /^[A-Z]\d{3}[A-Z]{3}$/.test(plate);
-
+    case 'MOT':  return new RegExp('^M' + suffix).test(plate);  // Motocicleta
+    case 'AUTO': return new RegExp('^P' + suffix).test(plate);  // Particular
+    case 'CAM':  return new RegExp('^C' + suffix).test(plate);  // Comercial/Carga
+    case 'BUS':  return new RegExp('^A' + suffix).test(plate);  // Alquiler
+    case 'OFC':  return new RegExp('^O' + suffix).test(plate);  // Oficial
     default:
       return true;
   }
