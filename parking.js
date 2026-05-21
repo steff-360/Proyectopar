@@ -874,8 +874,32 @@ function toast(msg, type = 'info') {
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 // Guatemala plates: P 123 ABC (motocicleta) or ABC 1234 or C 12345 etc.
 // Accept flexible alphanumeric 3-8 chars
-function isValidPlate(p) { return /^[A-Z0-9]{3,8}$/.test(p); }
-function setErr(id, msg)  { const e = el(id); if (e) e.textContent = msg; }
+function isValidPlate(plate, typeCode) {
+
+  plate = plate.trim().toUpperCase();
+
+  switch(typeCode) {
+
+    // MOTOCICLETA
+    case 'MOT':
+      return /^[M]\d{3}[A-Z]{3}$/.test(plate);
+
+    // AUTOMÓVIL
+    case 'AUTO':
+      return /^[P]\d{3}[A-Z]{3}$/.test(plate);
+
+    // CAMIONETA
+    case 'CAM':
+      return /^[C]\d{3}[A-Z]{3}$/.test(plate);
+
+    // BUS
+    case 'BUS':
+      return /^[A-Z]\d{3}[A-Z]{3}$/.test(plate);
+
+    default:
+      return true;
+  }
+}function setErr(id, msg)  { const e = el(id); if (e) e.textContent = msg; }
 function clearErr(id)     { const e = el(id); if (e) e.textContent = ''; }
 function escH(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -919,3 +943,11 @@ document.addEventListener('DOMContentLoaded', () => {
   el('login-hero-img').src = rand(IMAGES.loginHero);
   if (sessionStorage.getItem('cp_auth') === '1') goToApp();
 })();
+
+/* ABRIR REPORTES */
+
+function openReports(){
+
+  window.location.href = "Reportes.html";
+
+}
