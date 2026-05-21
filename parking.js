@@ -776,12 +776,6 @@ function saveParking() {
     setErr('pk-slot-err', 'Esa ranura ya está ocupada.');
     return;
   }
-  if (records.find(r => r.plate === plate && !r.exitTime && r.id !== id)) {
-    setErr('pk-plate-err', 'Esa placa ya está activa en el parqueadero.'); return;
-  }
-  if (records.find(r => r.slot === slot && !r.exitTime && r.id !== id)) {
-    setErr('pk-slot-err', 'Esa ranura ya está ocupada.'); return;
-  }
 
   const t = load(K.TYPES, []).find(x => x.id === typeId);
   let cost = null;
@@ -797,6 +791,7 @@ function saveParking() {
     records.push({ id: uid(), plate, slot, typeId, date, entryTime: entry, exitTime: exit || null, cost, createdAt: Date.now() });
   }
   save(K.PARKING, records);
+  renderDashboard();
   renderParking();
   // Refresh spaces if visible
   if (el('section-spaces').classList.contains('active')) renderSpaces();
@@ -934,6 +929,11 @@ function isValidPlate(plate, typeCode) {
 function clearErr(id)     { const e = el(id); if (e) e.textContent = ''; }
 function escH(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function timeDiffMinutes(t1, t2) {
+  const [h1, m1] = t1.split(':').map(Number);
+  const [h2, m2] = t2.split(':').map(Number);
+  return (h2 * 60 + m2) - (h1 * 60 + m1);
 }
 
 /* ══════════════════════════════════════════
