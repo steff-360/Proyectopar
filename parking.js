@@ -733,8 +733,22 @@ function saveParking() {
 
   ['pk-plate-err','pk-slot-err','pk-type-err','pk-date-err','pk-entry-err','pk-exit-err'].forEach(clearErr);
 
-  if (!plate)  { setErr('pk-plate-err', 'La placa es obligatoria.'); ok = false; }
-  else if (!isValidPlate(plate)) { setErr('pk-plate-err', 'Formato inválido. Ej: P123ABC o ABC1234'); ok = false; }
+  if (!plate) {
+    setErr('pk-plate-err', 'La placa es obligatoria.');
+    ok = false;
+  }
+  
+  if (
+    plate &&
+    typeId &&
+    !isValidPlate(
+      plate,
+      load(K.TYPES, []).find(t => t.id === typeId)?.code
+    )
+  ) {
+    setErr('pk-plate-err', 'La placa no coincide con el tipo de vehículo.');
+    ok = false;
+  }
   if (!slot)   { setErr('pk-slot-err', 'La ranura es obligatoria.'); ok = false; }
   if (!typeId) { setErr('pk-type-err', 'Selecciona el tipo de vehículo.'); ok = false; }
   if (!date)   { setErr('pk-date-err', 'La fecha es obligatoria.'); ok = false; }
@@ -745,6 +759,23 @@ function saveParking() {
   if (!ok) return;
 
   const records = load(K.PARKING, []);
+  if (records.some(r =>
+    r.plate.toUpperCase() === plate &&
+    !r.exitTime &&
+    r.id !== id
+  )) {
+    setErr('pk-plate-err', 'Esa placa ya está activa en el parqueadero.');
+    return;
+  }
+  
+  if (records.some(r =>
+    r.slot.toUpperCase() === slot &&
+    !r.exitTime &&
+    r.id !== id
+  )) {
+    setErr('pk-slot-err', 'Esa ranura ya está ocupada.');
+    return;
+  }
   if (records.find(r => r.plate === plate && !r.exitTime && r.id !== id)) {
     setErr('pk-plate-err', 'Esa placa ya está activa en el parqueadero.'); return;
   }
