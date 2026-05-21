@@ -1,0 +1,90 @@
+<!-- reports.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Campus Parking — Reportes</title>
+
+  <link rel="stylesheet" href="REPORTES.CSS">
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header class="topbar">
+
+      <h1>📊 Reporte de Servicios</h1>
+
+      <a href="index.html" class="btn-back">
+        ← Volver al sistema
+      </a>
+
+    </header>
+
+    <!-- FILTROS -->
+    <section class="filters">
+
+      <div class="input-group">
+        <label>Fecha Inicial</label>
+        <input type="date" id="start-date">
+      </div>
+
+      <div class="input-group">
+        <label>Fecha Final</label>
+        <input type="date" id="end-date">
+      </div>
+
+      <button onclick="generateReport()" class="btn-generate">
+        Generar Reporte
+      </button>
+
+    </section>
+
+    <!-- RESUMEN -->
+    <section class="summary">
+
+      <div class="card">
+        <h3>Total Vehículos</h3>
+        <span id="total-vehicles">0</span>
+      </div>
+
+      <div class="card">
+        <h3>Total Captado</h3>
+        <span id="total-income">Q0.00</span>
+      </div>
+
+    </section>
+
+    <!-- TABLA -->
+    <section class="table-section">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Placa</th>
+            <th>Tipo</th>
+            <th>Horas Acumuladas</th>
+            <th>Total Servicio</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="report-body"></tbody>
+
+      </table>
+
+    </section>
+
+  </div>
+
+  <script src="REPORTES.JS"></script>
+
+</body>
+</html>

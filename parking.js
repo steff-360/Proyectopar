@@ -892,12 +892,24 @@ function nowTime() {
   const d = new Date();
   return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
-function timeDiffMinutes(entry, exit) {
-  const [eh, em] = entry.split(':').map(Number);
-  const [xh, xm] = exit.split(':').map(Number);
-  const diff = (xh * 60 + xm) - (eh * 60 + em);
-  return diff > 0 ? diff : 0;
-}
+/* BLOQUEO DE FECHA */
+document.addEventListener('DOMContentLoaded', () => {
+
+  const dateInput = el('pk-date');
+
+  if (dateInput) {
+
+    dateInput.readOnly = true;
+
+    dateInput.addEventListener('keydown', e => {
+      e.preventDefault();
+    });
+
+    dateInput.addEventListener('paste', e => {
+      e.preventDefault();
+    });
+  }
+});
 
 /* ══════════════════════════════════════════
    BOOT
