@@ -50,6 +50,29 @@ function formatCurrency(n) {
 function formatDate(d) {
   return new Intl.DateTimeFormat('es-GT', { dateStyle: 'medium' }).format(new Date(d + 'T00:00'));
 }
+function _parseTimeToMinutes(time) {
+  if (!time) return 0;
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+function _getNowMinutes() {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+}
+function _dateToISO(value) {
+  if (!value) return null;
+  if (typeof value === 'number') {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toISOString().slice(0, 10);
+  }
+  if (typeof value === 'string' && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) {
+    return value;
+  }
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
+}
 
 /* ─── LOCAL STORAGE ─── */
 function load(key, def) {
@@ -151,6 +174,7 @@ document.querySelectorAll('.sidebar__nav-item').forEach(btn => {
     if (section === 'spaces')        renderSpaces();
     if (section === 'vehicle-types') renderVehicleTypes();
     if (section === 'parking')       renderParking();
+    if (section === 'reports')       generateReport();
     closeSidebar();
   });
 });
@@ -468,6 +492,13 @@ function openParkingModalWithSlot(slotId) {
   setTimeout(() => { el('pk-slot').value = slotId; }, 50);
 }
 
+function normalizeSlotId(value) {
+  if (!value) return '';
+  const normalized = value.trim().toUpperCase().replace(/\s+/g, '').replace(/_/g, '-');
+  const match = normalized.match(/^([A-Z]+)[-]?0*([1-9][0-9]?)$/);
+  return match ? `${match[1]}-${String(match[2]).padStart(2, '0')}` : value.trim().toUpperCase();
+}
+
 /* ─── Space Config Modal ─── */
 function openSpaceConfigModal() {
   const conf = load(K.SPACES, []);
@@ -725,7 +756,7 @@ function openParkingModal(id) {
 function saveParking() {
   const id     = el('pk-id').value;
   const plate  = el('pk-plate').value.trim().toUpperCase();
-  const slot   = el('pk-slot').value.trim().toUpperCase();
+  const slot   = normalizeSlotId(el('pk-slot').value);
   const typeId = el('pk-type').value;
   const date   = el('pk-date').value;
   const entry  = el('pk-entry').value;
@@ -747,7 +778,7 @@ function saveParking() {
       load(K.TYPES, []).find(t => t.id === typeId)?.code
     )
   ) {
-    setErr('pk-plate-err', 'Formato inválido (Ej: P001BBB). Use 3 dígitos (001-999) y 3 consonantes (sin vocales ni Ñ).');
+    setErr('pk-plate-err', 'Formato inválido (Ej: P001BBB). Use 3 números (001-999) y 3 consonantes.');
     ok = false;
   }
 
@@ -767,21 +798,15 @@ function saveParking() {
   }
 
   const records = load(K.PARKING, []);
-  if (ok && records.some(r =>
-    r.plate.toUpperCase() === plate &&
-    !r.exitTime &&
-    r.id !== id
-  )) {
-    setErr('pk-plate-err', 'Esa placa ya está activa en el parqueadero.');
+  // Validar duplicados de placa activa
+  if (ok && records.some(r => r.plate.toUpperCase() === plate && !r.exitTime && r.id !== id)) {
+    setErr('pk-plate-err', 'Este vehículo ya se encuentra en el parqueo.');
     ok = false;
   }
   
-  if (ok && records.some(r =>
-    r.slot.toUpperCase() === slot &&
-    !r.exitTime &&
-    r.id !== id
-  )) {
-    setErr('pk-slot-err', 'Esa ranura ya está ocupada.');
+  // Validar duplicados de ranura ocupada
+  if (ok && records.some(r => r.slot.toUpperCase() === slot && !r.exitTime && r.id !== id)) {
+    setErr('pk-slot-err', 'Esta ranura ya está siendo utilizada.');
     ok = false;
   }
 
@@ -987,8 +1012,124 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ABRIR REPORTES */
 
-function openReports(){
+function openEntryReport() {
+  document.querySelectorAll('.sidebar__nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const reportSection = document.getElementById('section-entry-report');
+  if (reportSection) reportSection.classList.add('active');
+  generateReport();
+}
 
-  window.location.href = "Reportes.html";
+function openDashboard() {
+  document.querySelectorAll('.sidebar__nav-item').forEach(b => b.classList.remove('active'));
+  const dashboardBtn = document.querySelector('.sidebar__nav-item[data-section="dashboard"]');
+  if (dashboardBtn) dashboardBtn.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const dashboardSection = document.getElementById('section-dashboard');
+  if (dashboardSection) dashboardSection.classList.add('active');
+  renderDashboard();
+}
 
+function clearReportView() {
+  const tbody = document.getElementById('report-body');
+  const totalVehiclesEl = document.getElementById('total-vehicles');
+  const totalIncomeEl = document.getElementById('total-income');
+  const statusEl = document.getElementById('report-status');
+
+  if (tbody) tbody.innerHTML = '';
+  if (totalVehiclesEl) totalVehiclesEl.textContent = '0';
+  if (totalIncomeEl) totalIncomeEl.textContent = 'Q 0.00';
+  if (statusEl) statusEl.textContent = 'Seleccione un rango de fechas y presione Generar reporte.';
+}
+
+function generateReport() {
+  const startDate = document.getElementById('report-start-date').value;
+  const endDate = document.getElementById('report-end-date').value;
+  const tbody = document.getElementById('report-body');
+  const totalVehiclesEl = document.getElementById('total-vehicles');
+  const totalIncomeEl = document.getElementById('total-income');
+  const statusEl = document.getElementById('report-status');
+
+  tbody.innerHTML = '';
+  totalVehiclesEl.textContent = '0';
+  totalIncomeEl.textContent = 'Q 0.00';
+  if (statusEl) statusEl.textContent = '';
+
+  const records = load(K.PARKING, []);
+  const types = load(K.TYPES, []);
+
+  if (!startDate || !endDate) {
+    if (statusEl) {
+      statusEl.textContent = 'Seleccione fecha inicial y fecha final para generar el reporte.';
+    }
+    return;
+  }
+
+  if (startDate > endDate) {
+    if (statusEl) {
+      statusEl.textContent = 'La fecha inicial no puede ser posterior a la fecha final.';
+    }
+    return;
+  }
+
+  if (!records.length) {
+    if (statusEl) statusEl.textContent = 'No existen registros de parqueo en el sistema.';
+    return;
+  }
+
+  const filteredRecords = records.filter(record => {
+    const recDate = _dateToISO(record.date) || _dateToISO(record.createdAt);
+    if (!recDate) return false;
+    return recDate >= startDate && recDate <= endDate;
+  });
+
+  if (!filteredRecords.length) {
+    if (statusEl) statusEl.textContent = `No hay servicios entre ${startDate} y ${endDate}.`;
+    return;
+  }
+
+  const summaryByPlate = {};
+  let totalRevenue = 0;
+
+  filteredRecords.forEach(record => {
+    const plate = (record.plate || '').toString().toUpperCase();
+    const typeName = (types.find(type => type.id === record.typeId) || {}).name || 'Desconocido';
+    const entryMin = _parseTimeToMinutes(record.entryTime);
+    const exitMin = record.exitTime ? _parseTimeToMinutes(record.exitTime) : _getNowMinutes();
+    const elapsedMinutes = Math.max(0, exitMin - entryMin);
+    const hours = Math.ceil(elapsedMinutes / 60);
+    const value = Number(record.cost || 0);
+
+    totalRevenue += value;
+
+    if (!summaryByPlate[plate]) {
+      summaryByPlate[plate] = {
+        plate,
+        typeName,
+        hours: 0,
+        total: 0,
+      };
+    }
+
+    summaryByPlate[plate].hours += hours;
+    summaryByPlate[plate].total += value;
+  });
+
+  if (totalVehiclesEl) totalVehiclesEl.textContent = filteredRecords.length;
+  if (totalIncomeEl) totalIncomeEl.textContent = formatCurrency(totalRevenue);
+
+  Object.values(summaryByPlate).forEach(entry => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><span class="plate-tag">${entry.plate}</span></td>
+      <td>${entry.typeName}</td>
+      <td>${entry.hours} h</td>
+      <td style="font-weight: bold; color: #2dd686;">${formatCurrency(entry.total)}</td>
+    `;
+    if (tbody) tbody.appendChild(row);
+  });
+
+  if (statusEl) {
+    statusEl.textContent = `Se encontraron ${filteredRecords.length} servicios.`;
+  }
 }

@@ -69,8 +69,6 @@
       </div>
     </div>
   </div>
-
-</div>
   <!-- MAIN APP VIEW -->
   <div id="view-app" class="view">
 
@@ -122,18 +120,6 @@
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
-      <!-- BOTÓN REPORTES -->
-
-<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
-
-  <button class="btn btn--primary" onclick="openReports()">
-
-    📊 Ver Reportes
-
-  </button>
-
-</div>
-
       <!-- DASHBOARD -->
       <section id="section-dashboard" class="section active">
         <div class="section-header">
@@ -141,7 +127,10 @@
             <h2 class="section-header__title">Dashboard</h2>
             <p class="section-header__sub">Resumen general del sistema</p>
           </div>
-          <div class="section-header__date" id="dash-date"></div>
+          <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn--primary" onclick="openEntryReport()">Nuevo reporte</button>
+            <div class="section-header__date" id="dash-date"></div>
+          </div>
         </div>
         <div class="dashboard-hero-img">
           <img id="dash-hero-img" src="" alt="Parking overview" />
@@ -169,6 +158,55 @@
         <div class="card" style="margin-top:1.5rem">
           <div class="card__header"><h3>Galería del Parqueadero</h3></div>
           <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+      </section>
+
+      <section id="section-entry-report" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Reporte de entrada y salida</h2>
+            <p class="section-header__sub">Servicios prestados en un rango de fechas</p>
+          </div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn--secondary" onclick="openDashboard()">Volver al dashboard</button>
+            <button class="btn btn--primary" onclick="generateReport()">Generar reporte</button>
+          </div>
+        </div>
+        <div class="card" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:1rem;">
+          <div class="input-group">
+            <label for="report-start-date">Fecha inicial</label>
+            <input type="date" id="report-start-date" />
+          </div>
+          <div class="input-group">
+            <label for="report-end-date">Fecha final</label>
+            <input type="date" id="report-end-date" />
+          </div>
+          <div style="display:flex;align-items:center;padding-left:1rem;">
+            <span id="report-status" style="color:var(--text3);font-size:.95rem;"></span>
+          </div>
+        </div>
+        <section class="summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1rem;">
+          <div class="card">
+            <h3>Total vehículos</h3>
+            <span id="total-vehicles">0</span>
+          </div>
+          <div class="card">
+            <h3>Total captado</h3>
+            <span id="total-income">Q 0.00</span>
+          </div>
+        </section>
+        <div class="table-wrap card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Horas acumuladas</th>
+                <th>Valor total</th>
+              </tr>
+            </thead>
+            <tbody id="report-body"></tbody>
+          </table>
         </div>
       </section>
 
@@ -257,10 +295,12 @@
             <h2 class="section-header__title">Servicio de Parqueo</h2>
             <p class="section-header__sub">Registro de entrada y salida de vehículos</p>
           </div>
-          <button class="btn btn--primary" onclick="openParkingModal()">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Registrar entrada
-          </button>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn--primary" onclick="openParkingModal()">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Registrar entrada
+            </button>
+          </div>
         </div>
         <div class="filter-bar">
           <div class="search-box">
@@ -297,30 +337,10 @@
             <button class="btn btn--primary" onclick="openParkingModal()">Registrar vehículo</button>
           </div>
         </div>
-      </section>
 
-    </main>
-  </div>
+        </section>
 
-  <!-- MODALS -->
 
-  <!-- Modal: Vehicle Type -->
-  <div id="modal-vt" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal__header">
-        <h3 id="modal-vt-title">Nuevo tipo de vehículo</h3>
-        <button class="modal__close" onclick="closeModal('modal-vt')">✕</button>
-      </div>
-      <div class="modal__body">
-        <form id="form-vt" novalidate>
-          <input type="hidden" id="vt-id" />
-          <div class="field">
-            <label for="vt-code">Código *</label>
-            <div class="field__input-wrap">
-              <input type="text" id="vt-code" placeholder="Ej: MOT" maxlength="10"/>
-            </div>
-            <span class="field__error" id="vt-code-err"></span>
-          </div>
           <div class="field">
             <label for="vt-name">Nombre *</label>
             <div class="field__input-wrap">
